@@ -1,7 +1,6 @@
-import { StatusBar } from "expo-status-bar";
+
 import React from "react";
 import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
-import AccImage from "./assets/products/acc1.jpg";
 import Avatar from "./assets/icons/avatar.png";
 import { API_URL } from "./config/constants";
 import axios from "axios";
@@ -23,7 +22,7 @@ export default function App() {
 			.catch((error) => {
 				console.error(error);
 			});
-	});
+	}, []);
 	return (
 		<View style={styles.container}>
 			<ScrollView>
@@ -33,7 +32,7 @@ export default function App() {
 						return (
 							<View style={styles.productCard}>
 								<View>
-									<Image source={{ uri: `${API_URL}/${product.imageUrl}` }} style={styles.productImage} resizeMode={"contain"} />
+									<Image source={{ uri: `${API_URL}/${product.imageUrl}`, }} style={styles.productImage} resizeMode={"contain"} />
 								</View>
 								<View style={styles.productContent}>
 									<Text style={styles.productName}>{product.name}</Text>
@@ -43,7 +42,9 @@ export default function App() {
 											<Image source={Avatar} style={styles.productAvatar} />
 											<Text style={styles.productSellerName}>{product.seller}</Text>
 										</View>
-										<Text style={styles.productDate}>{dayjs(product.createdAt).fromNow()}</Text>
+										<Text style={styles.productDate}>
+											{dayjs(product.createdAt).fromNow()}
+										</Text>
 									</View>
 								</View>
 							</View>
@@ -61,12 +62,22 @@ const styles = StyleSheet.create({
 		backgroundColor: "#fff",
 		paddingTop: 32,
 	},
+	productList: {
+		alignItems: "center",
+	},
+	headline: {
+		fontSize: 24,
+		fontWeight: "800",
+		marginBottom: 24,
+		textAlign: "center",
+	},
 	productCard: {
 		width: 320,
 		borderColor: "rgb(230,230,230)",
 		borderWidth: 1,
 		borderRadius: 16,
 		backgroundColor: "#fff",
+		marginBottom: 10,
 	},
 	productImage: {
 		width: "100%",
