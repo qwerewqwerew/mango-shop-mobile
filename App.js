@@ -1,4 +1,3 @@
-
 import React from "react";
 import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
 import Avatar from "./assets/icons/avatar.png";
@@ -12,12 +11,24 @@ dayjs.extend(relativeTime);
 dayjs.locale("ko");
 
 export default function App() {
+	const [banners, setBanners] = React.useState([]);
 	const [products, setProducts] = React.useState([]);
 	React.useEffect(() => {
 		axios
 			.get(`${API_URL}/products`)
 			.then((result) => {
 				setProducts(result.data.products);
+				console.log(result.data.products);
+
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+		axios
+			.get(`${API_URL}/banners`)
+			.then((result) => {
+				setBanners(result.data.banners);
+				console.log(result.data.banners);
 			})
 			.catch((error) => {
 				console.error(error);
@@ -26,13 +37,21 @@ export default function App() {
 	return (
 		<View style={styles.container}>
 			<ScrollView>
+				<View style={styles.banners}>
+					{banners.map((banner,index)=>{
+						return(
+							<Image source={{ uri: `${API_URL}/${banner.imageUrl}` }} style={styles.bannerImage} />
+						)
+					})}
+				</View>
 				<Text style={styles.headline}>Products</Text>
 				<View style={styles.productList}>
 					{products.map((product, index) => {
 						return (
-							<View style={styles.productCard}>
+							<View style={styles.productCard} key={index}>
+								{product.soldout === 1 && <View style={styles.productBlur} />}
 								<View>
-									<Image source={{ uri: `${API_URL}/${product.imageUrl}`, }} style={styles.productImage} resizeMode={"contain"} />
+									<Image source={{ uri: `${API_URL}/${product.imageUrl}` }} style={styles.productImage} resizeMode={"contain"} />
 								</View>
 								<View style={styles.productContent}>
 									<Text style={styles.productName}>{product.name}</Text>
@@ -42,9 +61,7 @@ export default function App() {
 											<Image source={Avatar} style={styles.productAvatar} />
 											<Text style={styles.productSellerName}>{product.seller}</Text>
 										</View>
-										<Text style={styles.productDate}>
-											{dayjs(product.createdAt).fromNow()}
-										</Text>
+										<Text style={styles.productDate}>{dayjs(product.createdAt).fromNow()}</Text>
 									</View>
 								</View>
 							</View>
@@ -121,5 +138,28 @@ const styles = StyleSheet.create({
 		fontSize: 24,
 		fontWeight: "800",
 		marginBottom: 24,
+	},
+	productBlur: {
+		position: "absolute",
+		top: 0,
+		bottom: 0,
+		right: 0,
+		left: 0,
+		backgroundColor: "#ffffffaa",
+		zIndex: 999,
+	},
+	bannerImage: {
+		width: "100%",
+		height: "100%",
+		position:"absolute",
+		top:0,
+		left:0,
+	},
+	banners: {
+		width: "100vw",
+		height: 300,
+		position:"relative",
+		top:0,
+		left:0,
 	},
 });
